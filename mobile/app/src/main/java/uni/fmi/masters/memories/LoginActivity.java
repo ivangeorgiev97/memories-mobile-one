@@ -43,11 +43,11 @@ public class LoginActivity extends AppCompatActivity {
             String passwordInput = passwordET.getText().toString();
 
             if (dbHelper.login(usernameInput, passwordInput)) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                 intent.putExtra("user", usernameInput);
                 startActivity(intent);
             } else {
-                Toast.makeText(getApplicationContext(), "Nice try", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Добър опит", Toast.LENGTH_SHORT).show();
             }
         } else if (v.getId() == R.id.registerTextView) {
             Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);

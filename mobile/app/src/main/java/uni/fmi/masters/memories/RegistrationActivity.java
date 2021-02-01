@@ -54,12 +54,12 @@ public class RegistrationActivity extends AppCompatActivity {
                     user.setPassword(password);
 
                     if (!dbHelper.registerUser(user)) {
-                        Toast.makeText(RegistrationActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegistrationActivity.this, "Грешка", Toast.LENGTH_SHORT).show();
                         return;
                     }
                 } else {
                     Toast.makeText(RegistrationActivity.this,
-                            "Please check the fields again",
+                            "Моля проверете полетата отново",
                             Toast.LENGTH_LONG);
                     return;
                 }

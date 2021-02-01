@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="uni.fmi.masters.memories.ui.home.HomeFragment"
+        android:label="Начало"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_memories"
+        android:name="uni.fmi.masters.memories.ui.categories.CategoriesFragment"
+        android:label="Спомени"
+        tools:layout="@layout/fragment_categories" />
+
+    <fragment
+        android:id="@+id/nav_categories"
+        android:name="uni.fmi.masters.memories.ui.memories.MemoriesFragment"
+        android:label="Категории"
+        tools:layout="@layout/fragment_memories" />
+</navigation>
