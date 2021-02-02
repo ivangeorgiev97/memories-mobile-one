@@ -12,14 +12,14 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_memories"
+        android:id="@+id/nav_categories"
         android:name="uni.fmi.masters.memories.ui.categories.CategoriesFragment"
-        android:label="Спомени"
+        android:label="Категории"
         tools:layout="@layout/fragment_categories" />
 
     <fragment
-        android:id="@+id/nav_categories"
+        android:id="@+id/nav_memories"
         android:name="uni.fmi.masters.memories.ui.memories.MemoriesFragment"
-        android:label="Категории"
+        android:label="Спомени"
         tools:layout="@layout/fragment_memories" />
 </navigation>
