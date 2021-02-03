@@ -5,6 +5,14 @@ public class Memory {
     private String title;
     private String description;
 
+    public Memory() {};
+
+    public Memory(int id, String title, String description) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+    }
+
     public int getId() {
         return id;
     }
