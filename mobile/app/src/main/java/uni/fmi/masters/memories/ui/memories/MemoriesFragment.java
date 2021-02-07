@@ -56,7 +56,6 @@ public class MemoriesFragment extends Fragment {
                 }
             });
 
-
             okayB.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
