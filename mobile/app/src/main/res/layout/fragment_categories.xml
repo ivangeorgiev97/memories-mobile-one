@@ -5,14 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.product.ProductFragment">
+    tools:context=".ui.categories.CategoriesFragment">
 
     <ListView
         android:id="@+id/categoriesListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
     </ListView>
-
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addCategoryButton"

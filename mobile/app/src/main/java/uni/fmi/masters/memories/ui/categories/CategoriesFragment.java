@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -63,7 +65,7 @@ public class CategoriesFragment extends Fragment {
                 }
             });
 
-            customDialog.setTitle("Добави категория");
+            customDialog.setTitle("Добави или редактирай категория");
             customDialog.setCanceledOnTouchOutside(false);
 
             customDialog.show();
@@ -84,6 +86,14 @@ public class CategoriesFragment extends Fragment {
 
         addCategoryB = root.findViewById(R.id.addCategoryButton);
         addCategoryB.setOnClickListener(onClickListener);
+
+        categoriesLV.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getActivity(), "delete logic here", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
 
         return root;
     }
