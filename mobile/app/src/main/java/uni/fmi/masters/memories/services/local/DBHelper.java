@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uni.fmi.masters.memories.entities.Category;
+import uni.fmi.masters.memories.entities.Memory;
 import uni.fmi.masters.memories.entities.User;
 
 public class DBHelper extends SQLiteOpenHelper {
@@ -45,6 +46,22 @@ public class DBHelper extends SQLiteOpenHelper {
             + " ('" + TABLE_CATEGORY_ID + "' INTEGER PRIMARY KEY," +
             "'" + TABLE_CATEGORY_NAME + "' varchar(50) NOT NULL)";
 
+    // Memory
+    public static final String TABLE_MEMORY = "memory";
+
+    public static final String TABLE_MEMORY_ID = "id";
+    public static final String TABLE_MEMORY_TITLE = "title";
+    public static final String TABLE_MEMORY_DESCRIPTION = "description";
+    public static final String TABLE_MEMORY_CATEGORY_ID = "category_id";
+
+    public static final String CREATE_TABLE_MEMORY = "CREATE TABLE " + TABLE_MEMORY
+            + " ('" + TABLE_MEMORY_ID + "' INTEGER PRIMARY KEY," +
+            "'" + TABLE_MEMORY_TITLE + "' varchar(50) NOT NULL," +
+            "'" + TABLE_MEMORY_DESCRIPTION + "' TEXT NOT NULL," +
+            "'" + TABLE_MEMORY_CATEGORY_ID + "' INTEGER," +
+            " FOREIGN KEY(" + TABLE_MEMORY_CATEGORY_ID + ") REFERENCES category('" + TABLE_CATEGORY_ID +"') )";
+
+
     public DBHelper(@Nullable Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
@@ -53,12 +70,14 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_USER);
         db.execSQL(CREATE_TABLE_CATEGORY);
+        db.execSQL(CREATE_TABLE_MEMORY);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MEMORY);
         onCreate(db);
     }
 
@@ -189,7 +208,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return categories;
     }
 
-    public Category getById(int categoryId) {
+    public Category getCategoryById(int categoryId) {
         Category category = null;
 
         SQLiteDatabase db = null;
@@ -255,7 +274,7 @@ public class DBHelper extends SQLiteOpenHelper {
             String where = TABLE_CATEGORY_ID + "=?";
             String[] whereArgs = { String.valueOf(id) };
 
-            db.delete(TABLE_USER, where, whereArgs);
+            db.delete(TABLE_CATEGORY, where, whereArgs);
         } catch (SQLException e) {
             Log.wtf(MY_ERROR, e.getMessage());
         } finally {
@@ -264,7 +283,6 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
-    // Category methods
     public boolean addOrUpdateCategory(Category category) {
         SQLiteDatabase db = null;
 
@@ -282,6 +300,180 @@ public class DBHelper extends SQLiteOpenHelper {
                 String[] whereArgs = { String.valueOf(category.getId()) };
 
                 if (db.update(TABLE_CATEGORY, contentValues, where, whereArgs) > 0) {
+                    return true;
+                }
+            }
+        } catch (SQLException sqlException) {
+            Log.wtf(MY_ERROR, sqlException.getMessage());
+        } finally {
+            if (db != null)
+                db.close();
+        }
+
+        return false;
+    }
+
+    // Memory methods
+    public boolean addMemory(Memory memory) {
+        SQLiteDatabase db = null;
+
+        try {
+            db = getWritableDatabase();
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(TABLE_MEMORY_ID, memory.getId());
+            contentValues.put(TABLE_MEMORY_TITLE, memory.getTitle());
+            contentValues.put(TABLE_MEMORY_DESCRIPTION, memory.getDescription());
+            contentValues.put(TABLE_MEMORY_CATEGORY_ID, memory.getCategoryId());
+
+            if (db.insert(TABLE_MEMORY, null, contentValues) != -1) {
+                return true;
+            }
+        } catch (SQLException sqlException) {
+            Log.wtf(MY_ERROR, sqlException.getMessage());
+        } finally {
+            if (db != null)
+                db.close();
+        }
+
+        return false;
+    }
+
+    public List<Memory> getAllMemories() {
+        List<Memory> memories = new ArrayList<Memory>();
+
+        SQLiteDatabase db = null;
+        Cursor c = null;
+
+        try {
+            String getAllCategoriesSQL = "SELECT * FROM memory ORDER BY id DESC";
+
+            db = this.getWritableDatabase();
+            c = db.rawQuery(getAllCategoriesSQL, null);
+
+            if (c.moveToFirst()) {
+                do {
+                    int id = Integer.parseInt(c.getString(c.getColumnIndex(TABLE_MEMORY_ID)));
+                    String title = c.getString(c.getColumnIndex(TABLE_MEMORY_TITLE));
+                    String description = c.getString(c.getColumnIndex(TABLE_MEMORY_DESCRIPTION));
+                    int categoryId = Integer.parseInt(c.getString(c.getColumnIndex(TABLE_CATEGORY_ID)));
+
+                    Memory memory = new Memory(id, title, description, categoryId, getCategoryById(categoryId));
+
+                    memories.add(memory);
+                } while (c.moveToNext());
+            }
+        } catch (SQLException e) {
+            Log.wtf(MY_ERROR, e.getMessage());
+        } finally {
+            if (c != null)
+                c.close();
+
+            if (db != null)
+                db.close();
+        }
+
+        return memories;
+    }
+
+    public Memory getMemoryById(int memoryId) {
+        Memory memory = null;
+
+        SQLiteDatabase db = null;
+        Cursor c = null;
+
+        try {
+            String getByIdCategorySQL = "SELECT * FROM memory where id = " + memoryId;
+
+            db = this.getWritableDatabase();
+            c = db.rawQuery(getByIdCategorySQL, null);
+
+            if (c.moveToFirst()) {
+                int id = Integer.parseInt(c.getString(c.getColumnIndex(TABLE_MEMORY_ID)));
+                String title = c.getString(c.getColumnIndex(TABLE_MEMORY_TITLE));
+                String description = c.getString(c.getColumnIndex(TABLE_MEMORY_DESCRIPTION));
+                int categoryId = Integer.parseInt(c.getString(c.getColumnIndex(TABLE_CATEGORY_ID)));
+
+                memory = new Memory(id, title, description, categoryId, getCategoryById(categoryId));
+            }
+        } catch (SQLException e) {
+            Log.wtf(MY_ERROR, e.getMessage());
+        } finally {
+            if (c != null)
+                c.close();
+
+            if (db != null)
+                db.close();
+        }
+
+        return memory;
+    }
+
+    public boolean updateMemory(Memory memory) {
+        SQLiteDatabase db = null;
+
+        try {
+            db = getWritableDatabase();
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(TABLE_MEMORY_ID, memory.getId());
+            contentValues.put(TABLE_MEMORY_TITLE, memory.getTitle());
+            contentValues.put(TABLE_MEMORY_DESCRIPTION, memory.getDescription());
+            contentValues.put(TABLE_MEMORY_CATEGORY_ID, memory.getCategoryId());
+
+            String where = "id = ?";
+            String[] whereArgs = { String.valueOf(memory.getId()) };
+
+            if (db.update(TABLE_MEMORY, contentValues, where, whereArgs) > 0) {
+                return true;
+            }
+        } catch (SQLException sqlException) {
+            Log.wtf(MY_ERROR, sqlException.getMessage());
+        } finally {
+            if (db != null)
+                db.close();
+        }
+
+        return false;
+    }
+
+    public void removeMemory(int id) {
+        SQLiteDatabase db = null;
+
+        try {
+            db = getWritableDatabase();
+
+            String where = TABLE_MEMORY_ID + "=?";
+            String[] whereArgs = { String.valueOf(id) };
+
+            db.delete(TABLE_MEMORY, where, whereArgs);
+        } catch (SQLException e) {
+            Log.wtf(MY_ERROR, e.getMessage());
+        } finally {
+            if (db != null)
+                db.close();
+        }
+    }
+
+    public boolean addOrUpdateMemory(Memory memory) {
+        SQLiteDatabase db = null;
+
+        try {
+            db = getWritableDatabase();
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(TABLE_MEMORY_ID, memory.getId());
+            contentValues.put(TABLE_MEMORY_TITLE, memory.getTitle());
+            contentValues.put(TABLE_MEMORY_DESCRIPTION, memory.getDescription());
+            contentValues.put(TABLE_MEMORY_CATEGORY_ID, memory.getCategoryId());
+
+            if (db.insertWithOnConflict(TABLE_MEMORY, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE) != -1) {
+                return true;
+            } else {
+                String where = "id = ?";
+                String[] whereArgs = { String.valueOf(memory.getId()) };
+
+                if (db.update(TABLE_MEMORY, contentValues, where, whereArgs) > 0) {
                     return true;
                 }
             }
