@@ -21,9 +21,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import uni.fmi.masters.memories.R;
 import uni.fmi.masters.memories.entities.Category;
+import uni.fmi.masters.memories.services.local.DBHelper;
 
 public class CategoriesFragment extends Fragment {
 
@@ -31,6 +33,8 @@ public class CategoriesFragment extends Fragment {
     CategoriesAdapter categoriesAdapter;
     FloatingActionButton addCategoryB;
     Dialog customDialog;
+    DBHelper dbHelper;
+    List<Category> categories;
 
     private CategoriesViewModel categoriesViewModel;
 
@@ -58,7 +62,22 @@ public class CategoriesFragment extends Fragment {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            // TODO - ADD CATEGORY TO BACKEND LOGIC
+                            int id = dbHelper.getLastCategoryId() + 1;
+                            String name = categoryNameET.getText().toString();
+
+                            Category category = new Category(id, name);
+
+                            if (dbHelper.addCategory(category)) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        categories.add(category);
+                                        categoriesAdapter.notifyDataSetChanged();
+
+                                        customDialog.hide();
+                                    }
+                                });
+                            }
                         }
                     }).start();
                 }
@@ -73,10 +92,9 @@ public class CategoriesFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        ArrayList<Category> categories = new ArrayList<>();
-        categories.add(new Category(1, "Category 1"));
-        categories.add(new Category(2, "Category 2"));
-        categories.add(new Category(3, "Category 3"));
+        dbHelper = new DBHelper(getContext());
+
+        categories = dbHelper.getAllCategories();
 
         View root = inflater.inflate(R.layout.fragment_categories, container, false);
         categoriesLV = root.findViewById(R.id.categoriesListView);
@@ -89,7 +107,29 @@ public class CategoriesFragment extends Fragment {
         categoriesLV.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "delete logic here", Toast.LENGTH_SHORT).show();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final Category category = (Category) parent.getItemAtPosition(position);
+
+                        dbHelper.removeCategory(category.getId());
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for(int i = 0 ; i < categories.size(); i++){
+                                    if(categories.get(i).getId() == category.getId()){
+                                        categories.remove(i);
+                                    }
+                                }
+
+                                categoriesAdapter.notifyDataSetChanged();
+                            }
+                        });
+
+                    }
+                }).start();
+
                 return false;
             }
         });

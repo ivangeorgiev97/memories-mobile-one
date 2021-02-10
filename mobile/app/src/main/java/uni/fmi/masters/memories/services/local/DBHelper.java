@@ -173,6 +173,31 @@ public class DBHelper extends SQLiteOpenHelper {
         return false;
     }
 
+    public int getLastCategoryId() {
+        int lastCategoryId = 0;
+
+        SQLiteDatabase db = null;
+        Cursor c = null;
+
+        try {
+            String selectQuery= "SELECT id FROM " + TABLE_CATEGORY +" ORDER BY id DESC LIMIT 1";
+            db = this.getWritableDatabase();
+            c = db.rawQuery(selectQuery, null);
+            if(c.moveToFirst())
+                lastCategoryId = Integer.parseInt(c.getString(c.getColumnIndex(TABLE_CATEGORY_ID)));
+        } catch (SQLException e) {
+            Log.wtf(MY_ERROR, e.getMessage());
+        } finally {
+            if (c != null)
+                c.close();
+
+            if (db != null)
+                db.close();
+        }
+
+        return lastCategoryId;
+    }
+
     public List<Category> getAllCategories() {
         List<Category> categories = new ArrayList<Category>();
 
@@ -337,6 +362,31 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         return false;
+    }
+
+    public int getLastMemoryId() {
+        int lastMemoryId = 0;
+
+        SQLiteDatabase db = null;
+        Cursor c = null;
+
+        try {
+            String selectQuery= "SELECT id FROM " + TABLE_MEMORY +" ORDER BY id DESC LIMIT 1";
+            db = this.getWritableDatabase();
+            c = db.rawQuery(selectQuery, null);
+            if(c.moveToFirst())
+                lastMemoryId = Integer.parseInt(c.getString(c.getColumnIndex(TABLE_MEMORY_ID)));
+        } catch (SQLException e) {
+            Log.wtf(MY_ERROR, e.getMessage());
+        } finally {
+            if (c != null)
+                c.close();
+
+            if (db != null)
+                db.close();
+        }
+
+        return lastMemoryId;
     }
 
     public List<Memory> getAllMemories() {
