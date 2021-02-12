@@ -83,7 +83,7 @@ public class CategoriesFragment extends Fragment {
                 }
             });
 
-            customDialog.setTitle("Добави или редактирай категория");
+            customDialog.setTitle("Добави категория");
             customDialog.setCanceledOnTouchOutside(false);
 
             customDialog.show();
@@ -107,6 +107,88 @@ public class CategoriesFragment extends Fragment {
         categoriesLV.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Category category = (Category) parent.getItemAtPosition(position);
+
+                customDialog = new Dialog(getContext());
+                customDialog.setContentView(R.layout.add_edit_category_dialog);
+
+                final EditText categoryNameET = customDialog.findViewById(R.id.categoryNameEditText);
+                categoryNameET.setText(category.getName());
+
+                Button okayB = customDialog.findViewById(R.id.okayButton);
+                Button cancelB = customDialog.findViewById(R.id.cancelButton);
+                Button deleteB = customDialog.findViewById(R.id.deleteButton);
+                deleteB.setVisibility(View.VISIBLE);
+
+                deleteB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dbHelper.removeCategory(category.getId());
+
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        for(int i = 0 ; i < categories.size(); i++){
+                                            if(categories.get(i).getId() == category.getId()){
+                                                categories.remove(i);
+                                            }
+                                        }
+
+                                        categoriesAdapter.notifyDataSetChanged();
+
+                                        deleteB.setVisibility(View.GONE);
+                                        customDialog.hide();
+                                    }
+                                });
+
+                            }
+                        }).start();
+                    }
+                });
+
+                cancelB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        deleteB.setVisibility(View.GONE);
+                        customDialog.cancel();
+                    }
+                });
+
+                okayB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                              category.setName(categoryNameET.getText().toString());
+
+                                if (dbHelper.updateCategory(category)) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            categories.add(category);
+                                            categoriesAdapter.notifyDataSetChanged();
+
+                                            deleteB.setVisibility(View.GONE);
+                                            customDialog.hide();
+                                        }
+                                    });
+                                }
+                            }
+                        }).start();
+                    }
+                });
+
+                customDialog.setTitle("Обнови категория");
+                customDialog.setCanceledOnTouchOutside(false);
+
+                customDialog.show();
+
+                /*
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -129,6 +211,7 @@ public class CategoriesFragment extends Fragment {
 
                     }
                 }).start();
+                 */
 
                 return false;
             }
