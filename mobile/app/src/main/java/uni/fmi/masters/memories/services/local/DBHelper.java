@@ -406,7 +406,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     int id = Integer.parseInt(c.getString(c.getColumnIndex(TABLE_MEMORY_ID)));
                     String title = c.getString(c.getColumnIndex(TABLE_MEMORY_TITLE));
                     String description = c.getString(c.getColumnIndex(TABLE_MEMORY_DESCRIPTION));
-                    int categoryId = Integer.parseInt(c.getString(c.getColumnIndex(TABLE_CATEGORY_ID)));
+                    int categoryId = Integer.parseInt(c.getString(c.getColumnIndex(TABLE_MEMORY_CATEGORY_ID)));
 
                     Memory memory = new Memory(id, title, description, categoryId, getCategoryById(categoryId));
 

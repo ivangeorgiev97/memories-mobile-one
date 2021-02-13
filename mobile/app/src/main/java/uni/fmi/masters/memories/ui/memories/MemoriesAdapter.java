@@ -15,8 +15,11 @@ import java.util.List;
 import uni.fmi.masters.memories.MainMenuActivity;
 import uni.fmi.masters.memories.R;
 import uni.fmi.masters.memories.entities.Memory;
+import uni.fmi.masters.memories.services.local.DBHelper;
 
 public class MemoriesAdapter extends ArrayAdapter<Memory> {
+    DBHelper dbHelper;
+
     public MemoriesAdapter(@NonNull Context context, int resource, @NonNull List<Memory> objects) {
         super(context, resource, objects);
     }
@@ -34,9 +37,12 @@ public class MemoriesAdapter extends ArrayAdapter<Memory> {
         TextView categoryTV = convertView.findViewById(R.id.memoriesCategoryTextView);
         TextView descriptionTV = convertView.findViewById(R.id.memoriesDescriptionTextView);
 
+        dbHelper = new DBHelper(getContext());
+
         idTV.setText(String.valueOf(getItem(position).getId()));
         titleTV.setText(getItem(position).getTitle());
-        categoryTV.setText(getItem(position).getCategory().getName());
+        String categoryName = dbHelper.getCategoryById(getItem(position).getCategoryId()).getName();
+        categoryTV.setText(categoryName);
         descriptionTV.setText(getItem(position).getDescription());
 
         return convertView;
