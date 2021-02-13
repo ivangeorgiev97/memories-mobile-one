@@ -170,7 +170,7 @@ public class CategoriesFragment extends Fragment {
                                     getActivity().runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            categories.add(category);
+                                            categories.set(position, category);
                                             categoriesAdapter.notifyDataSetChanged();
 
                                             deleteB.setVisibility(View.GONE);
@@ -183,35 +183,10 @@ public class CategoriesFragment extends Fragment {
                     }
                 });
 
-                customDialog.setTitle("Обнови категория");
+                customDialog.setTitle("Обнови или изтрий категория");
                 customDialog.setCanceledOnTouchOutside(false);
 
                 customDialog.show();
-
-                /*
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final Category category = (Category) parent.getItemAtPosition(position);
-
-                        dbHelper.removeCategory(category.getId());
-
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                for(int i = 0 ; i < categories.size(); i++){
-                                    if(categories.get(i).getId() == category.getId()){
-                                        categories.remove(i);
-                                    }
-                                }
-
-                                categoriesAdapter.notifyDataSetChanged();
-                            }
-                        });
-
-                    }
-                }).start();
-                 */
 
                 return false;
             }
