@@ -32,6 +32,7 @@ public class CategoriesFragment extends Fragment {
     ListView categoriesLV;
     CategoriesAdapter categoriesAdapter;
     FloatingActionButton addCategoryB;
+    FloatingActionButton syncCategoriesB;
     Dialog customDialog;
     DBHelper dbHelper;
     List<Category> categories;
@@ -90,6 +91,13 @@ public class CategoriesFragment extends Fragment {
         }
     };
 
+    private View.OnClickListener onSyncClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            // Todo - sync categories logic
+        }
+    };
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         dbHelper = new DBHelper(getContext());
@@ -103,6 +111,9 @@ public class CategoriesFragment extends Fragment {
 
         addCategoryB = root.findViewById(R.id.addCategoryButton);
         addCategoryB.setOnClickListener(onClickListener);
+
+        syncCategoriesB = root.findViewById(R.id.syncCategoriesButton);
+        syncCategoriesB.setOnClickListener(onSyncClickListener);
 
         categoriesLV.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override

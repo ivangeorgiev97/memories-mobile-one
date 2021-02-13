@@ -31,6 +31,7 @@ public class MemoriesFragment extends Fragment {
     ListView memoriesLV;
     MemoriesAdapter memoriesAdapter;
     FloatingActionButton addMemoryB;
+    FloatingActionButton syncMemoriesB;
     Dialog customDialog;
     DBHelper dbHelper;
     List<Memory> memories;
@@ -103,6 +104,13 @@ public class MemoriesFragment extends Fragment {
         }
     };
 
+    private View.OnClickListener onSyncMemoriesClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            // TODO - Sync memories logic
+        }
+    };
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         dbHelper = new DBHelper(getContext());
@@ -129,6 +137,9 @@ public class MemoriesFragment extends Fragment {
 
         addMemoryB = root.findViewById(R.id.addMemoryButton);
         addMemoryB.setOnClickListener(onClickListener);
+
+        syncMemoriesB = root.findViewById(R.id.syncMemoriesButton);
+        syncMemoriesB.setOnClickListener(onSyncMemoriesClickListener);
 
         memoriesLV.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
