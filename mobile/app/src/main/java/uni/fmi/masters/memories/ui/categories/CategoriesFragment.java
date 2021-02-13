@@ -23,11 +23,16 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import uni.fmi.masters.memories.R;
 import uni.fmi.masters.memories.entities.Category;
+import uni.fmi.masters.memories.services.external.CategoryService;
 import uni.fmi.masters.memories.services.local.DBHelper;
 
 public class CategoriesFragment extends Fragment {
+
+    public static final String API_URL = "http://localhost:8000";
 
     ListView categoriesLV;
     CategoriesAdapter categoriesAdapter;
@@ -36,6 +41,8 @@ public class CategoriesFragment extends Fragment {
     Dialog customDialog;
     DBHelper dbHelper;
     List<Category> categories;
+    Retrofit retrofit;
+    CategoryService categoryService;
 
     private CategoriesViewModel categoriesViewModel;
 
@@ -101,6 +108,12 @@ public class CategoriesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         dbHelper = new DBHelper(getContext());
+
+        retrofit = new Retrofit.Builder()
+                .baseUrl(API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        categoryService = retrofit.create(CategoryService.class);
 
         categories = dbHelper.getAllCategories();
 
