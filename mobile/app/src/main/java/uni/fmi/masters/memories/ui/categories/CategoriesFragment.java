@@ -119,6 +119,15 @@ public class CategoriesFragment extends Fragment {
                 Button cancelB = customDialog.findViewById(R.id.cancelButton);
                 Button deleteB = customDialog.findViewById(R.id.deleteButton);
                 deleteB.setVisibility(View.VISIBLE);
+                Button checkForChangesB = customDialog.findViewById(R.id.checkForChangesCategoriesButton);
+                checkForChangesB.setVisibility(View.VISIBLE);
+
+                checkForChangesB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // TODO - ADD LOGIC FOR CHANGES
+                    }
+                });
 
                 deleteB.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -140,6 +149,7 @@ public class CategoriesFragment extends Fragment {
                                         categoriesAdapter.notifyDataSetChanged();
 
                                         deleteB.setVisibility(View.GONE);
+                                        checkForChangesB.setVisibility(View.GONE);
                                         customDialog.hide();
                                     }
                                 });
@@ -153,6 +163,7 @@ public class CategoriesFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         deleteB.setVisibility(View.GONE);
+                        checkForChangesB.setVisibility(View.GONE);
                         customDialog.cancel();
                     }
                 });
@@ -173,6 +184,7 @@ public class CategoriesFragment extends Fragment {
                                             categoriesAdapter.notifyDataSetChanged();
 
                                             deleteB.setVisibility(View.GONE);
+                                            checkForChangesB.setVisibility(View.GONE);
                                             customDialog.hide();
                                         }
                                     });

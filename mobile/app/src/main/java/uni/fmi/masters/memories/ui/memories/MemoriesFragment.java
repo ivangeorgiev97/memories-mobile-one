@@ -160,6 +160,15 @@ public class MemoriesFragment extends Fragment {
                 Button cancelB = customDialog.findViewById(R.id.memoryCancelButton);
                 Button deleteB = customDialog.findViewById(R.id.memoryDeleteButton);
                 deleteB.setVisibility(View.VISIBLE);
+                Button checkForChangesB = customDialog.findViewById(R.id.checkForMemoryChangesButton);
+                checkForChangesB.setVisibility(View.VISIBLE);
+
+                checkForChangesB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // TODO - ADD LOGIC FOR CHANGES
+                    }
+                });
 
                 deleteB.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -180,6 +189,7 @@ public class MemoriesFragment extends Fragment {
 
                                         memoriesAdapter.notifyDataSetChanged();
 
+                                        checkForChangesB.setVisibility(View.GONE);
                                         deleteB.setVisibility(View.GONE);
                                         customDialog.hide();
                                     }
@@ -193,6 +203,7 @@ public class MemoriesFragment extends Fragment {
                 cancelB.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        checkForChangesB.setVisibility(View.GONE);
                         deleteB.setVisibility(View.GONE);
                         customDialog.cancel();
                     }
@@ -221,6 +232,8 @@ public class MemoriesFragment extends Fragment {
                                             memories.set(position, memory);
                                             memoriesAdapter.notifyDataSetChanged();
 
+                                            deleteB.setVisibility(View.GONE);
+                                            checkForChangesB.setVisibility(View.GONE);
                                             customDialog.hide();
                                         }
                                     });

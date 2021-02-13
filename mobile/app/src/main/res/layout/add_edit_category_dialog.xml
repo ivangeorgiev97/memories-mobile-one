@@ -44,4 +44,11 @@
             android:visibility="gone"
             app:backgroundTint="#CD3939" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/checkForChangesCategoriesButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Провери за промени"
+        android:visibility="gone" />
 </LinearLayout>

@@ -55,5 +55,14 @@
             android:text="Изтрий"
             android:visibility="gone"
             app:backgroundTint="#F41C1C" />
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/checkForMemoryChangesButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Провери за промени"
+        android:visibility="gone" />
 </LinearLayout>
