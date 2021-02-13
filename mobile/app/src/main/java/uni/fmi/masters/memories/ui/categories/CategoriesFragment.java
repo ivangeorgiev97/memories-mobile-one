@@ -160,7 +160,6 @@ public class CategoriesFragment extends Fragment {
                 okayB.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
                         new Thread(new Runnable() {
                             @Override
                             public void run() {

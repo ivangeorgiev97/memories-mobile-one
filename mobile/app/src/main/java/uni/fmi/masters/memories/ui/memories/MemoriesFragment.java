@@ -51,7 +51,7 @@ public class MemoriesFragment extends Fragment {
             final EditText memoryTitleET = customDialog.findViewById(R.id.memoryTitleEditText);
             final EditText memoryDescriptionET = customDialog.findViewById(R.id.memoryDescriptionMultilineEditText);
 
-            Spinner memoryCategorySpinner =  customDialog.findViewById(R.id.categorySpinner);
+            Spinner memoryCategorySpinner = customDialog.findViewById(R.id.categorySpinner);
             ArrayAdapter<String> memoryCategorySpinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.categories_spinner_row, categoryNames);
             memoryCategorySpinner.setAdapter(memoryCategorySpinnerAdapter);
 
@@ -133,7 +133,108 @@ public class MemoriesFragment extends Fragment {
         memoriesLV.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "delete logic here", Toast.LENGTH_SHORT).show();
+                Memory memory = (Memory) parent.getItemAtPosition(position);
+
+                customDialog = new Dialog(getContext());
+                customDialog.setContentView(R.layout.add_edit_memory_dialog);
+
+                final EditText memoryTitleET = customDialog.findViewById(R.id.memoryTitleEditText);
+                memoryTitleET.setText(memory.getTitle());
+                final EditText memoryDescriptionET = customDialog.findViewById(R.id.memoryDescriptionMultilineEditText);
+                memoryDescriptionET.setText(memory.getDescription());
+
+                Spinner memoryCategorySpinner = customDialog.findViewById(R.id.categorySpinner);
+                ArrayAdapter<String> memoryCategorySpinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.categories_spinner_row, categoryNames);
+                memoryCategorySpinner.setAdapter(memoryCategorySpinnerAdapter);
+
+                String categoryName = dbHelper.getCategoryById(memory.getCategoryId()).getName();
+                for (int i = 0; i < categoryNames.length; i++) {
+                    if (categoryNames[i].equals(categoryName)) {
+                        memoryCategorySpinner.setSelection(i);
+                        break;
+                    }
+                }
+
+
+                Button okayB = customDialog.findViewById(R.id.memoryOkayButton);
+                Button cancelB = customDialog.findViewById(R.id.memoryCancelButton);
+                Button deleteB = customDialog.findViewById(R.id.memoryDeleteButton);
+                deleteB.setVisibility(View.VISIBLE);
+
+                deleteB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dbHelper.removeMemory(memory.getId());
+
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        for(int i = 0 ; i < memories.size(); i++){
+                                            if(memories.get(i).getId() == memory.getId()){
+                                                memories.remove(i);
+                                            }
+                                        }
+
+                                        memoriesAdapter.notifyDataSetChanged();
+
+                                        deleteB.setVisibility(View.GONE);
+                                        customDialog.hide();
+                                    }
+                                });
+
+                            }
+                        }).start();
+                    }
+                });
+
+                cancelB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        deleteB.setVisibility(View.GONE);
+                        customDialog.cancel();
+                    }
+                });
+
+                okayB.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                String title = memoryTitleET.getText().toString();
+                                String description = memoryDescriptionET.getText().toString();
+                                int categoryId = categoryIds[memoryCategorySpinner.getSelectedItemPosition()];
+                                Category category = dbHelper.getCategoryById(categoryId);
+
+                                memory.setTitle(title);
+                                memory.setDescription(description);
+                                memory.setCategoryId(categoryId);
+                                memory.setCategory(category);
+
+                                if (dbHelper.updateMemory(memory)) {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            memories.set(position, memory);
+                                            memoriesAdapter.notifyDataSetChanged();
+
+                                            customDialog.hide();
+                                        }
+                                    });
+                                }
+                            }
+                        }).start();
+                    }
+                });
+
+                customDialog.setTitle("Обнови или изтрий спомен");
+                customDialog.setCanceledOnTouchOutside(false);
+
+                customDialog.show();
+
                 return false;
             }
         });

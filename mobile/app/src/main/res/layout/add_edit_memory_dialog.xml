@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -36,7 +37,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Добави" />
+            android:text="OK"
+            app:backgroundTint="#21B55C" />
 
         <Button
             android:id="@+id/memoryCancelButton"
@@ -44,5 +46,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Затвори" />
+
+        <Button
+            android:id="@+id/memoryDeleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Изтрий"
+            android:visibility="gone"
+            app:backgroundTint="#F41C1C" />
     </LinearLayout>
 </LinearLayout>
