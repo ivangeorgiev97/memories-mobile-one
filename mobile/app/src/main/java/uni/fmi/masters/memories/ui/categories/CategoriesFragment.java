@@ -190,11 +190,13 @@ public class CategoriesFragment extends Fragment {
                 checkForChangesB.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        category.setName(categoryNameET.getText().toString());
+
                         Call<Category> call = categoryService.getCategoryById(category.getId());
                         call.enqueue(new Callback<Category>() {
                             @Override
                             public void onResponse(Call<Category> call, Response<Category> response) {
-                                if (response.isSuccessful() && response.body().getName().equals(category.getName())) {
+                                if (response.isSuccessful() && !response.body().getName().equals(category.getName())) {
                                     noChangesTV.setVisibility(View.GONE);
                                     doNotDoNothingB.setVisibility(View.VISIBLE);
                                     updateB.setVisibility(View.VISIBLE);
@@ -215,7 +217,36 @@ public class CategoriesFragment extends Fragment {
                                     updateB.setOnClickListener(new View.OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
+                                            category.setName(categoryNameET.getText().toString());
+                                            Call<Category> updateCall = categoryService.updateCategory(category.getId(), category.getName());
+                                            updateCall.enqueue(new Callback<Category>() {
+                                                @Override
+                                                public void onResponse(Call<Category> call, Response<Category> response) {
+                                                    if (response.isSuccessful()) {
+                                                        if (dbHelper.updateCategory(category)) {
+                                                            getActivity().runOnUiThread(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    categories.set(position, category);
+                                                                    categoriesAdapter.notifyDataSetChanged();
 
+                                                                    doNotDoNothingB.setVisibility(View.GONE);
+                                                                    updateB.setVisibility(View.GONE);
+                                                                    duplicateB.setVisibility(View.GONE);
+                                                                    deleteB.setVisibility(View.GONE);
+                                                                    checkForChangesB.setVisibility(View.GONE);
+                                                                    customDialog.hide();
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<Category> call, Throwable t) {
+                                                    Log.e("ERROR: ", t.getMessage());
+                                                }
+                                            });
                                         }
                                     });
 

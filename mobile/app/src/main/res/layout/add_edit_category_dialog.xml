@@ -56,7 +56,7 @@
         android:id="@+id/noChangesCategoryTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Няма промени"
+        android:text="Няма промени или не съществува такъв запис"
         android:textColor="#ED4545"
         android:textSize="24sp"
         android:visibility="gone" />
