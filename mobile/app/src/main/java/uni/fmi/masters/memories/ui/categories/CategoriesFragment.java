@@ -211,6 +211,7 @@ public class CategoriesFragment extends Fragment {
                                             duplicateB.setVisibility(View.GONE);
                                             deleteB.setVisibility(View.GONE);
                                             checkForChangesB.setVisibility(View.GONE);
+
                                             customDialog.hide();
                                         }
                                     });

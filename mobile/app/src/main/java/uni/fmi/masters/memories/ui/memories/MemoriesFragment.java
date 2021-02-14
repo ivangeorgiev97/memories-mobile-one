@@ -213,7 +213,6 @@ public class MemoriesFragment extends Fragment {
                     }
                 }
 
-
                 Button okayB = customDialog.findViewById(R.id.memoryOkayButton);
                 Button cancelB = customDialog.findViewById(R.id.memoryCancelButton);
                 Button deleteB = customDialog.findViewById(R.id.memoryDeleteButton);
@@ -229,7 +228,152 @@ public class MemoriesFragment extends Fragment {
                 checkForChangesB.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // TODO - ADD LOGIC FOR CHANGES
+                        Memory oldMemory = new Memory(memory);
+                        memory.setTitle(memoryTitleET.getText().toString());
+                        memory.setDescription(memoryDescriptionET.getText().toString());
+                        memory.setCategoryId(categoryIds[memoryCategorySpinner.getSelectedItemPosition()]);
+                        memory.setCategory(dbHelper.getCategoryById(memory.getCategoryId()));
+
+                        Call<Memory> call = memoryService.getMemoryById(memory.getId());
+                        call.enqueue(new Callback<Memory>() {
+                            @Override
+                            public void onResponse(Call<Memory> call, Response<Memory> response) {
+                                if (response.isSuccessful() &&
+                                        (
+                                            !response.body().getTitle().equals(memory.getTitle()) ||
+                                            !response.body().getDescription().equals(memory.getDescription()) ||
+                                            response.body().getCategoryId() != memory.getCategoryId()
+                                        )) {
+                                    noChangesTV.setVisibility(View.GONE);
+                                    doNotDoNothingB.setVisibility(View.VISIBLE);
+                                    updateB.setVisibility(View.VISIBLE);
+                                    duplicateB.setVisibility(View.VISIBLE);
+
+                                    doNotDoNothingB.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            doNotDoNothingB.setVisibility(View.GONE);
+                                            updateB.setVisibility(View.GONE);
+                                            duplicateB.setVisibility(View.GONE);
+                                            deleteB.setVisibility(View.GONE);
+                                            checkForChangesB.setVisibility(View.GONE);
+
+                                            customDialog.hide();
+                                        }
+                                    });
+
+                                    updateB.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            memory.setTitle(memoryTitleET.getText().toString());
+                                            memory.setDescription(memoryDescriptionET.getText().toString());
+                                            memory.setCategoryId(categoryIds[memoryCategorySpinner.getSelectedItemPosition()]);
+                                            memory.setCategory(dbHelper.getCategoryById(memory.getCategoryId()));
+                                            Call<Memory> updateCall = memoryService.updateMemory(memory.getId(), memory.getTitle(), memory.getDescription(), memory.getCategoryId());
+                                            updateCall.enqueue(new Callback<Memory>() {
+                                                @Override
+                                                public void onResponse(Call<Memory> call, Response<Memory> response) {
+                                                    if (response.isSuccessful()) {
+                                                        if (dbHelper.updateMemory(memory)) {
+                                                            getActivity().runOnUiThread(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    memories.set(position, memory);
+                                                                    memoriesAdapter.notifyDataSetChanged();
+
+                                                                    doNotDoNothingB.setVisibility(View.GONE);
+                                                                    updateB.setVisibility(View.GONE);
+                                                                    duplicateB.setVisibility(View.GONE);
+                                                                    deleteB.setVisibility(View.GONE);
+                                                                    checkForChangesB.setVisibility(View.GONE);
+
+                                                                    customDialog.hide();
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<Memory> call, Throwable t) {
+                                                    Log.e("ERROR: ", t.getMessage());
+                                                }
+                                            });
+                                        }
+                                    });
+
+                                    duplicateB.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            memory.setTitle(memoryTitleET.getText().toString());
+                                            memory.setDescription(memoryDescriptionET.getText().toString());
+                                            memory.setCategoryId(categoryIds[memoryCategorySpinner.getSelectedItemPosition()]);
+                                            memory.setCategory(dbHelper.getCategoryById(memory.getCategoryId()));
+
+                                            Call<Memory> updateCall = memoryService.updateMemory(memory.getId(), memory.getTitle(), memory.getDescription(), memory.getCategoryId());
+                                            updateCall.enqueue(new Callback<Memory>() {
+                                                @Override
+                                                public void onResponse(Call<Memory> call, Response<Memory> response) {
+                                                    if (response.isSuccessful()) {
+                                                        if (dbHelper.updateMemory(memory)) {
+                                                            getActivity().runOnUiThread(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    memories.set(position, memory);
+                                                                    memoriesAdapter.notifyDataSetChanged();
+
+                                                                    oldMemory.setId(dbHelper.getLastMemoryId() + 1);
+
+                                                                    if (dbHelper.addMemory(oldMemory)) {
+                                                                        Call<Memory> addCall = memoryService.addMemory(oldMemory.getId(), oldMemory.getTitle(), oldMemory.getDescription(), oldMemory.getCategoryId());
+                                                                        addCall.enqueue(new Callback<Memory>() {
+                                                                            @Override
+                                                                            public void onResponse(Call<Memory> call, Response<Memory> response) {
+                                                                                if (response.isSuccessful()) {
+                                                                                    memories.add(oldMemory);
+                                                                                    memoriesAdapter.notifyDataSetChanged();
+                                                                                }
+
+                                                                                doNotDoNothingB.setVisibility(View.GONE);
+                                                                                updateB.setVisibility(View.GONE);
+                                                                                duplicateB.setVisibility(View.GONE);
+                                                                                deleteB.setVisibility(View.GONE);
+                                                                                checkForChangesB.setVisibility(View.GONE);
+
+                                                                                customDialog.hide();
+                                                                            }
+
+                                                                            @Override
+                                                                            public void onFailure(Call<Memory> call, Throwable t) {
+                                                                                Log.e("ERROR: ", t.getMessage());
+                                                                            }
+                                                                        });
+
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onFailure(Call<Memory> call, Throwable t) {
+                                                    Log.e("ERROR: ", t.getMessage());
+                                                }
+                                            });
+                                        }
+                                    });
+                                } else {
+                                    noChangesTV.setVisibility(View.VISIBLE);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Memory> call, Throwable t) {
+                                Log.e("ERROR: ", t.getMessage());
+                                noChangesTV.setVisibility(View.VISIBLE);
+                            }
+                        });
                     }
                 });
 

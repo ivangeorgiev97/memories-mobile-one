@@ -21,7 +21,7 @@ public interface MemoryService {
 
     @FormUrlEncoded
     @PUT("memories/update/{id}")
-    Call<Memory> update(@Path("id") int id, @Field("title") String name, @Field("description") String description, @Field("category_id") int category_id);
+    Call<Memory> updateMemory(@Path("id") int id, @Field("title") String name, @Field("description") String description, @Field("category_id") int category_id);
 
     @FormUrlEncoded
     @POST("memories/create")

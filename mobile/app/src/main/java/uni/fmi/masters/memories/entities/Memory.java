@@ -25,6 +25,12 @@ public class Memory {
 
     public Memory() {};
 
+    public Memory(Memory anotherMeory) {
+        this.id = anotherMeory.getId();
+        this.title = anotherMeory.getTitle();
+        this.description = anotherMeory.getDescription();
+    }
+
     public Memory(int id, String title, String description) {
         this.id = id;
         this.title = title;
