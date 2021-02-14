@@ -41,7 +41,9 @@ public class MemoriesAdapter extends ArrayAdapter<Memory> {
 
         idTV.setText(String.valueOf(getItem(position).getId()));
         titleTV.setText(getItem(position).getTitle());
-        String categoryName = dbHelper.getCategoryById(getItem(position).getCategoryId()).getName();
+        String categoryName = dbHelper.getCategoryById(getItem(position).getCategoryId()) != null && dbHelper.getCategoryById(getItem(position).getCategoryId()).getName() != null
+                ? dbHelper.getCategoryById(getItem(position).getCategoryId()).getName()
+                : "";
         categoryTV.setText(categoryName);
         descriptionTV.setText(getItem(position).getDescription());
 

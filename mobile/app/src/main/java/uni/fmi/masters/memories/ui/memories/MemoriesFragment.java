@@ -205,7 +205,9 @@ public class MemoriesFragment extends Fragment {
                 ArrayAdapter<String> memoryCategorySpinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.categories_spinner_row, categoryNames);
                 memoryCategorySpinner.setAdapter(memoryCategorySpinnerAdapter);
 
-                String categoryName = dbHelper.getCategoryById(memory.getCategoryId()).getName();
+                String categoryName = dbHelper.getCategoryById(memory.getCategoryId()) != null && dbHelper.getCategoryById(memory.getCategoryId()).getName() != null ?
+                        dbHelper.getCategoryById(memory.getCategoryId()).getName() :
+                        "";
                 for (int i = 0; i < categoryNames.length; i++) {
                     if (categoryNames[i].equals(categoryName)) {
                         memoryCategorySpinner.setSelection(i);
