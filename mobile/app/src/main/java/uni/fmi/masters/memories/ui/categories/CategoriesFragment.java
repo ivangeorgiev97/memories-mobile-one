@@ -2,6 +2,7 @@ package uni.fmi.masters.memories.ui.categories;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,16 +24,18 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import uni.fmi.masters.memories.R;
 import uni.fmi.masters.memories.entities.Category;
 import uni.fmi.masters.memories.services.external.CategoryService;
+import uni.fmi.masters.memories.services.external.ClientUtils;
 import uni.fmi.masters.memories.services.local.DBHelper;
 
 public class CategoriesFragment extends Fragment {
-
-    public static final String API_URL = "http://localhost:8000";
 
     ListView categoriesLV;
     CategoriesAdapter categoriesAdapter;
@@ -41,8 +44,8 @@ public class CategoriesFragment extends Fragment {
     Dialog customDialog;
     DBHelper dbHelper;
     List<Category> categories;
-    Retrofit retrofit;
     CategoryService categoryService;
+    List<Category> apiCategories;
 
     private CategoriesViewModel categoriesViewModel;
 
@@ -101,7 +104,21 @@ public class CategoriesFragment extends Fragment {
     private View.OnClickListener onSyncClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            // Todo - sync categories logic
+            Call<List<Category>> call = categoryService.getAllCategories();
+            call.enqueue(new Callback<List<Category>>() {
+                @Override
+                public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
+                    if (response.isSuccessful()) {
+                        apiCategories = response.body();
+                        System.out.println(apiCategories);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Category>> call, Throwable t) {
+                    Log.e("ERROR: ", t.getMessage());
+                }
+            });
         }
     };
 
@@ -109,11 +126,8 @@ public class CategoriesFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         dbHelper = new DBHelper(getContext());
 
-        retrofit = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        categoryService = retrofit.create(CategoryService.class);
+        apiCategories = new ArrayList<Category>();
+        categoryService = ClientUtils.getCategoryService();
 
         categories = dbHelper.getAllCategories();
 

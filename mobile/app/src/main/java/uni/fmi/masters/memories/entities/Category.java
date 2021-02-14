@@ -1,7 +1,16 @@
 package uni.fmi.masters.memories.entities;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class Category {
+
+    @SerializedName("id")
+    @Expose
     private int id;
+
+    @SerializedName("name")
+    @Expose
     private String name;
 
     public Category() {}

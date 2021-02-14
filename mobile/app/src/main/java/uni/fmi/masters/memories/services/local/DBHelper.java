@@ -150,6 +150,31 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+    public boolean updateUser(User user) {
+        SQLiteDatabase db = null;
+
+        try {
+            db = getWritableDatabase();
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(TABLE_USER_USERNAME, user.getUsername());
+            contentValues.put(TABLE_USER_PASSWORD, user.getPassword());
+            String where = "id = ?";
+            String[] whereArgs = { String.valueOf(user.getId()) };
+
+            if (db.update(TABLE_USER, contentValues, where, whereArgs) > 0) {
+                return true;
+            }
+        } catch (SQLException sqlException) {
+            Log.wtf(MY_ERROR, sqlException.getMessage());
+        } finally {
+            if (db != null)
+                db.close();
+        }
+
+        return false;
+    }
+
     // Category methods
     public boolean addCategory(Category category) {
         SQLiteDatabase db = null;
