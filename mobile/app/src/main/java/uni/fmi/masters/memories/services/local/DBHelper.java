@@ -59,7 +59,7 @@ public class DBHelper extends SQLiteOpenHelper {
             "'" + TABLE_MEMORY_TITLE + "' varchar(50) NOT NULL," +
             "'" + TABLE_MEMORY_DESCRIPTION + "' TEXT NOT NULL," +
             "'" + TABLE_MEMORY_CATEGORY_ID + "' INTEGER," +
-            " FOREIGN KEY(" + TABLE_MEMORY_CATEGORY_ID + ") REFERENCES category('" + TABLE_CATEGORY_ID +"') )";
+            " FOREIGN KEY(" + TABLE_MEMORY_CATEGORY_ID + ") REFERENCES category('" + TABLE_CATEGORY_ID +"') ON DELETE CASCADE )";
 
 
     public DBHelper(@Nullable Context context) {

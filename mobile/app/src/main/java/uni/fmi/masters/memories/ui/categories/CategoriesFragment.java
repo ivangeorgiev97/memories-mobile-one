@@ -110,7 +110,17 @@ public class CategoriesFragment extends Fragment {
                 public void onResponse(Call<List<Category>> call, Response<List<Category>> response) {
                     if (response.isSuccessful()) {
                         apiCategories = response.body();
-                        System.out.println(apiCategories);
+                        for (int i = 0; i < apiCategories.size(); i++) {
+                            dbHelper.addOrUpdateCategory(apiCategories.get(i));
+                            Category previousCategory = findCategoryById(apiCategories.get(i).getId(), categories);
+
+                            if (previousCategory != null)
+                                categories.remove(previousCategory);
+
+                            categories.add(apiCategories.get(i));
+                        }
+
+                        categoriesAdapter.notifyDataSetChanged();
                     }
                 }
 
@@ -121,6 +131,16 @@ public class CategoriesFragment extends Fragment {
             });
         }
     };
+
+    private Category findCategoryById(int id, List<Category> categories) {
+        for (Category category : categories) {
+            if (category.getId() == id) {
+                return category;
+            }
+        }
+
+        return null;
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -221,9 +241,11 @@ public class CategoriesFragment extends Fragment {
                                             categories.set(position, category);
                                             categoriesAdapter.notifyDataSetChanged();
 
+                                            /*
                                             deleteB.setVisibility(View.GONE);
                                             checkForChangesB.setVisibility(View.GONE);
                                             customDialog.hide();
+                                             */
                                         }
                                     });
                                 }
