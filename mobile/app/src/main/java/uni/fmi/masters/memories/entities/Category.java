@@ -15,6 +15,11 @@ public class Category {
 
     public Category() {}
 
+    public Category(Category anotherCategory) {
+        this.id = anotherCategory.getId();
+        this.name = anotherCategory.getName();
+    }
+
     public Category(int id, String name) {
         this.id = id;
         this.name = name;
