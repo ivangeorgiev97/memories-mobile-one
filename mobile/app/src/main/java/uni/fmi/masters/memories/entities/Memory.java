@@ -17,7 +17,7 @@ public class Memory {
     @Expose
     private String description;
 
-    @SerializedName("categoryId")
+    @SerializedName("category_id")
     @Expose
     private int categoryId;
 

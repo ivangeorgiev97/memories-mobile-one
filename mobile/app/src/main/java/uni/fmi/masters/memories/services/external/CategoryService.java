@@ -4,6 +4,7 @@ import java.util.List;
 
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -27,4 +28,7 @@ public interface CategoryService {
     @FormUrlEncoded
     @POST("categories/create")
     Call<Category> addCategory(@Field("id") int id, @Field("name") String name);
+
+    @DELETE("categories/delete/{id}")
+    Call<Category> deleteCategory(@Path("id") int id);
 }

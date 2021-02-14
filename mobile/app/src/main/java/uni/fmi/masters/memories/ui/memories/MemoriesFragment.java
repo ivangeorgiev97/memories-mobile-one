@@ -2,6 +2,7 @@ package uni.fmi.masters.memories.ui.memories;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,9 +23,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import uni.fmi.masters.memories.R;
 import uni.fmi.masters.memories.entities.Category;
 import uni.fmi.masters.memories.entities.Memory;
+import uni.fmi.masters.memories.services.external.ClientUtils;
+import uni.fmi.masters.memories.services.external.MemoryService;
 import uni.fmi.masters.memories.services.local.DBHelper;
 
 public class MemoriesFragment extends Fragment {
@@ -40,6 +47,8 @@ public class MemoriesFragment extends Fragment {
     String[] categoryNames;
     List<Integer> categoryIdsList;
     Integer[] categoryIds;
+    MemoryService memoryService;
+    List<Memory> apiMemories;
 
     private MemoriesViewModel memoriesViewModel;
 
@@ -107,13 +116,51 @@ public class MemoriesFragment extends Fragment {
     private View.OnClickListener onSyncMemoriesClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            // TODO - Sync memories logic
+            Call<List<Memory>> call = memoryService.getAllMemories();
+            call.enqueue(new Callback<List<Memory>>() {
+                @Override
+                public void onResponse(Call<List<Memory>> call, Response<List<Memory>> response) {
+                    if (response.isSuccessful()) {
+                        apiMemories = response.body();
+                        for (int i = 0; i < apiMemories.size(); i++) {
+                            dbHelper.addOrUpdateMemory(apiMemories.get(i));
+                            Memory previousMemory = findMemoryById(apiMemories.get(i).getId(), memories);
+
+                            if (previousMemory != null)
+                                memories.remove(previousMemory);
+
+                            memories.add(apiMemories.get(i));
+                        }
+
+                        memoriesAdapter.notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Memory>> call, Throwable t) {
+                    Log.e("ERROR: ", t.getMessage());
+                }
+            });
         }
     };
+
+    private Memory findMemoryById(int id, List<Memory> memories) {
+        for (Memory memory : memories) {
+            if (memory.getId() == id) {
+                return memory;
+            }
+        }
+
+        return null;
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         dbHelper = new DBHelper(getContext());
+
+        apiMemories = new ArrayList<Memory>();
+        memoryService = ClientUtils.getMemoryService();
+
         categoryNamesList = new ArrayList<String>();
         categoryIdsList = new ArrayList<Integer>();
         categories = dbHelper.getAllCategories();
@@ -173,6 +220,11 @@ public class MemoriesFragment extends Fragment {
                 deleteB.setVisibility(View.VISIBLE);
                 Button checkForChangesB = customDialog.findViewById(R.id.checkForMemoryChangesButton);
                 checkForChangesB.setVisibility(View.VISIBLE);
+
+                TextView noChangesTV = customDialog.findViewById(R.id.noChangesMemoryTextView);
+                Button doNotDoNothingB = customDialog.findViewById(R.id.doNotDoNothingMemoryButton);
+                Button updateB = customDialog.findViewById(R.id.updateMemoryButton);
+                Button duplicateB = customDialog.findViewById(R.id.duplicateMemoryButton);
 
                 checkForChangesB.setOnClickListener(new View.OnClickListener() {
                     @Override

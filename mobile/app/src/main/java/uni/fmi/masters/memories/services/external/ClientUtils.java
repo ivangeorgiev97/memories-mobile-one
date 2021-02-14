@@ -10,4 +10,8 @@ public class ClientUtils {
         return ExternalClient.getExternalClient(API_URL).create(CategoryService.class);
     }
 
+    public static MemoryService getMemoryService() {
+        return ExternalClient.getExternalClient(API_URL).create(MemoryService.class);
+    }
+
 }
