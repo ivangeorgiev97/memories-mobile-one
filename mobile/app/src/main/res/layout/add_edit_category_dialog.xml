@@ -51,4 +51,34 @@
         android:layout_height="wrap_content"
         android:text="Провери за промени"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/noChangesCategoryTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Няма промени"
+        android:textColor="#ED4545"
+        android:textSize="24sp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/doNotDoNothingCategoryButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Пропусни"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/updateCategoryButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Обнови"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/duplicateCategoryButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Дублирай и обнови"
+        android:visibility="gone" />
 </LinearLayout>

@@ -14,7 +14,12 @@ class CategoryController extends Controller
 
     public function getById($id)
     {
-        return response()->json(CategoryModel::find($id));
+        $category = CategoryModel::find($id);
+
+        if ($category)
+            return response()->json($category);
+
+        return response()->json([], 404);
     }
 
     public function create(Request $request)

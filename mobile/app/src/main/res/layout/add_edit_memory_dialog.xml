@@ -65,4 +65,34 @@
         android:layout_weight="1"
         android:text="Провери за промени"
         android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/noChangesMemoryTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Няма промени"
+        android:textColor="#ED4545"
+        android:textSize="24sp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/doNotDoNothingMemoryButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Пропусни"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/updateMemoryButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Обнови"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/duplicateMemoryButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Дублирай и обнови"
+        android:visibility="gone" />
 </LinearLayout>

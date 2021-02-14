@@ -33,7 +33,12 @@ class MemoryController extends Controller
 
     public function getById($id)
     {
-        return response()->json(MemoryModel::find($id));
+        $memory = MemoryModel::find($id);
+
+        if ($memory)
+            return response()->json($memory);
+
+        return response()->json([], 404);
     }
 
     public function create(Request $request)

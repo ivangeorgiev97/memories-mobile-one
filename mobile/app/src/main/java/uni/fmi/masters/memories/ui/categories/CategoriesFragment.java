@@ -175,15 +175,67 @@ public class CategoriesFragment extends Fragment {
 
                 Button okayB = customDialog.findViewById(R.id.okayButton);
                 Button cancelB = customDialog.findViewById(R.id.cancelButton);
+
                 Button deleteB = customDialog.findViewById(R.id.deleteButton);
                 deleteB.setVisibility(View.VISIBLE);
+
                 Button checkForChangesB = customDialog.findViewById(R.id.checkForChangesCategoriesButton);
                 checkForChangesB.setVisibility(View.VISIBLE);
+
+                TextView noChangesTV = customDialog.findViewById(R.id.noChangesCategoryTextView);
+                Button doNotDoNothingB = customDialog.findViewById(R.id.doNotDoNothingCategoryButton);
+                Button updateB = customDialog.findViewById(R.id.updateCategoryButton);
+                Button duplicateB = customDialog.findViewById(R.id.duplicateCategoryButton);
 
                 checkForChangesB.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // TODO - ADD LOGIC FOR CHANGES
+                        Call<Category> call = categoryService.getCategoryById(category.getId());
+                        call.enqueue(new Callback<Category>() {
+                            @Override
+                            public void onResponse(Call<Category> call, Response<Category> response) {
+                                if (response.isSuccessful() && response.body().getName().equals(category.getName())) {
+                                    noChangesTV.setVisibility(View.GONE);
+                                    doNotDoNothingB.setVisibility(View.VISIBLE);
+                                    updateB.setVisibility(View.VISIBLE);
+                                    duplicateB.setVisibility(View.VISIBLE);
+
+                                    doNotDoNothingB.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            doNotDoNothingB.setVisibility(View.GONE);
+                                            updateB.setVisibility(View.GONE);
+                                            duplicateB.setVisibility(View.GONE);
+                                            deleteB.setVisibility(View.GONE);
+                                            checkForChangesB.setVisibility(View.GONE);
+                                            customDialog.hide();
+                                        }
+                                    });
+
+                                    updateB.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+
+                                        }
+                                    });
+
+                                    duplicateB.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+
+                                        }
+                                    });
+                                } else {
+                                    noChangesTV.setVisibility(View.VISIBLE);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Category> call, Throwable t) {
+                                Log.e("ERROR: ", t.getMessage());
+                                noChangesTV.setVisibility(View.VISIBLE);
+                            }
+                        });
                     }
                 });
 
@@ -240,12 +292,6 @@ public class CategoriesFragment extends Fragment {
                                         public void run() {
                                             categories.set(position, category);
                                             categoriesAdapter.notifyDataSetChanged();
-
-                                            /*
-                                            deleteB.setVisibility(View.GONE);
-                                            checkForChangesB.setVisibility(View.GONE);
-                                            customDialog.hide();
-                                             */
                                         }
                                     });
                                 }
