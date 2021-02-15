@@ -82,26 +82,42 @@ public class MemoriesFragment extends Fragment {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            int id = dbHelper.getLastMemoryId() + 1;
+                            // Old way
+                           //  int id = dbHelper.getLastMemoryId() + 1;
+
                             String title = memoryTitleET.getText().toString();
                             String description = memoryDescriptionET.getText().toString();
                             int categoryId = categoryIds[memoryCategorySpinner.getSelectedItemPosition()];
                             Category category = dbHelper.getCategoryById(categoryId);
 
-                            Memory memory = new Memory(id, title, description, categoryId, category);
+                            Memory memory = new Memory(title, description, categoryId, category);
 
-                            if (dbHelper.addMemory(memory)) {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        // TODO - ADD REMOTE MEMORY
-                                        memories.add(memory);
-                                        memoriesAdapter.notifyDataSetChanged();
+                            Call<Memory> addCallWithoutId = memoryService.addMemoryWithoutId(title, description, categoryId);
+                            addCallWithoutId.enqueue(new Callback<Memory>() {
+                                @Override
+                                public void onResponse(Call<Memory> call, Response<Memory> response) {
+                                    if (response.isSuccessful()) {
+                                        memory.setId(response.body().getId());
 
-                                        customDialog.hide();
+                                        if (dbHelper.addMemory(memory)) {
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    memories.add(memory);
+                                                    memoriesAdapter.notifyDataSetChanged();
+                                                }
+                                            });
+                                        }
                                     }
-                                });
-                            }
+
+                                    customDialog.hide();
+                                }
+
+                                @Override
+                                public void onFailure(Call<Memory> call, Throwable t) {
+                                    Log.e("ERROR: ", t.getMessage());
+                                }
+                            });
                         }
                     }).start();
                 }
@@ -387,23 +403,36 @@ public class MemoriesFragment extends Fragment {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                // TODO - REMOVE REMOTE MEMORY
-                                dbHelper.removeMemory(memory.getId());
-
-                                getActivity().runOnUiThread(new Runnable() {
+                                Call<Memory> deleteCall = memoryService.deleteMemory(memory.getId());
+                                deleteCall.enqueue(new Callback<Memory>() {
                                     @Override
-                                    public void run() {
-                                        for(int i = 0 ; i < memories.size(); i++){
-                                            if(memories.get(i).getId() == memory.getId()){
-                                                memories.remove(i);
-                                            }
-                                        }
+                                    public void onResponse(Call<Memory> call, Response<Memory> response) {
+                                        if (response.isSuccessful()) {
+                                            dbHelper.removeMemory(memory.getId());
 
-                                        memoriesAdapter.notifyDataSetChanged();
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    for(int i = 0 ; i < memories.size(); i++){
+                                                        if(memories.get(i).getId() == memory.getId()){
+                                                            memories.remove(i);
+                                                        }
+                                                    }
+
+                                                    memoriesAdapter.notifyDataSetChanged();
+                                                }
+                                            });
+                                        }
 
                                         checkForChangesB.setVisibility(View.GONE);
                                         deleteB.setVisibility(View.GONE);
+
                                         customDialog.hide();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<Memory> call, Throwable t) {
+                                        Log.e("ERROR: ", t.getMessage());
                                     }
                                 });
 
