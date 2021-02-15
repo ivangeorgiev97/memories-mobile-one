@@ -39,8 +39,9 @@ class CategoryController extends Controller
 
     public function delete($id)
     {
+        $category = CategoryModel::find($id);
         CategoryModel::findOrFail($id)->delete();
 
-        return response('Category was deleted successfuly', 200);
+        return response($category, 200);
     }
 }

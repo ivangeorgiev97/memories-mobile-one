@@ -27,6 +27,10 @@ public interface MemoryService {
     @POST("memories/create")
     Call<Memory> addMemory(@Field("id") int id, @Field("title") String name, @Field("description") String description, @Field("category_id") int category_id);
 
+    @FormUrlEncoded
+    @POST("memories/create")
+    Call<Memory> addMemoryWithoutId(@Field("title") String name, @Field("description") String description, @Field("category_id") int category_id);
+
     @DELETE("memories/delete/{id}")
     Call<Memory> deleteMemory(@Path("id") int id);
 }

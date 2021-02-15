@@ -58,8 +58,9 @@ class MemoryController extends Controller
 
     public function delete($id)
     {
+        $memory = MemoryModel::find($id);
         MemoryModel::findOrFail($id)->delete();
 
-        return response('Memory was deleted successfuly', 200);
+        return response()->json($memory, 200);
     }
 }

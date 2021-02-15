@@ -29,6 +29,10 @@ public interface CategoryService {
     @POST("categories/create")
     Call<Category> addCategory(@Field("id") int id, @Field("name") String name);
 
+    @FormUrlEncoded
+    @POST("categories/create")
+    Call<Category> addCategoryWithoutId(@Field("name") String name);
+
     @DELETE("categories/delete/{id}")
     Call<Category> deleteCategory(@Path("id") int id);
 }

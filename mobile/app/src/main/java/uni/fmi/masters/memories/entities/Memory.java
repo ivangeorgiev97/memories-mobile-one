@@ -59,6 +59,13 @@ public class Memory {
         this.categoryId = categoryId;
     }
 
+    public Memory(String title, String description, int categoryId, Category category) {
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        this.categoryId = categoryId;
+    }
+
     public int getId() {
         return id;
     }

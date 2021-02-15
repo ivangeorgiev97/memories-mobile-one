@@ -73,22 +73,38 @@ public class CategoriesFragment extends Fragment {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            int id = dbHelper.getLastCategoryId() + 1;
+                            // OLD WAY
+                            // int id = dbHelper.getLastCategoryId() + 1;
                             String name = categoryNameET.getText().toString();
 
-                            Category category = new Category(id, name);
+                            Category category = new Category(name);
 
-                            if (dbHelper.addCategory(category)) {
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        categories.add(category);
-                                        categoriesAdapter.notifyDataSetChanged();
+                            Call<Category> addCallWithoutId = categoryService.addCategoryWithoutId(category.getName());
+                            addCallWithoutId.enqueue(new Callback<Category>() {
+                                @Override
+                                public void onResponse(Call<Category> call, Response<Category> response) {
+                                    if (response.isSuccessful()) {
+                                        category.setId(response.body().getId());
 
-                                        customDialog.hide();
+                                        if (dbHelper.addCategory(category)) {
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    categories.add(category);
+                                                    categoriesAdapter.notifyDataSetChanged();
+                                                }
+                                            });
+                                        }
                                     }
-                                });
-                            }
+
+                                    customDialog.hide();
+                                }
+
+                                @Override
+                                public void onFailure(Call<Category> call, Throwable t) {
+                                    Log.e("ERROR: ", t.getMessage());
+                                }
+                            });
                         }
                     }).start();
                 }
@@ -328,25 +344,38 @@ public class CategoriesFragment extends Fragment {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                dbHelper.removeCategory(category.getId());
-
-                                getActivity().runOnUiThread(new Runnable() {
+                                Call<Category> deleteCall = categoryService.deleteCategory(category.getId());
+                                deleteCall.enqueue(new Callback<Category>() {
                                     @Override
-                                    public void run() {
-                                        for(int i = 0 ; i < categories.size(); i++){
-                                            if(categories.get(i).getId() == category.getId()){
-                                                categories.remove(i);
-                                            }
-                                        }
+                                    public void onResponse(Call<Category> call, Response<Category> response) {
+                                        if (response.isSuccessful()) {
+                                            dbHelper.removeCategory(category.getId());
 
-                                        categoriesAdapter.notifyDataSetChanged();
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    for(int i = 0 ; i < categories.size(); i++){
+                                                        if(categories.get(i).getId() == category.getId()){
+                                                            categories.remove(i);
+                                                        }
+                                                    }
+
+                                                    categoriesAdapter.notifyDataSetChanged();
+                                                }
+                                            });
+                                        }
 
                                         deleteB.setVisibility(View.GONE);
                                         checkForChangesB.setVisibility(View.GONE);
+
                                         customDialog.hide();
                                     }
-                                });
 
+                                    @Override
+                                    public void onFailure(Call<Category> call, Throwable t) {
+                                        Log.e("ERROR: ", t.getMessage());
+                                    }
+                                });
                             }
                         }).start();
                     }

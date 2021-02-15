@@ -94,6 +94,7 @@ public class MemoriesFragment extends Fragment {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        // TODO - ADD REMOTE MEMORY
                                         memories.add(memory);
                                         memoriesAdapter.notifyDataSetChanged();
 
@@ -305,6 +306,7 @@ public class MemoriesFragment extends Fragment {
                                     });
 
                                     duplicateB.setOnClickListener(new View.OnClickListener() {
+                                        // TODO - Fix this logic
                                         @Override
                                         public void onClick(View v) {
                                             memory.setTitle(memoryTitleET.getText().toString());
@@ -385,6 +387,7 @@ public class MemoriesFragment extends Fragment {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
+                                // TODO - REMOVE REMOTE MEMORY
                                 dbHelper.removeMemory(memory.getId());
 
                                 getActivity().runOnUiThread(new Runnable() {
