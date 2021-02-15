@@ -25,10 +25,11 @@ public class Memory {
 
     public Memory() {};
 
-    public Memory(Memory anotherMeory) {
-        this.id = anotherMeory.getId();
-        this.title = anotherMeory.getTitle();
-        this.description = anotherMeory.getDescription();
+    public Memory(Memory anotherMemory) {
+        this.id = anotherMemory.getId();
+        this.title = anotherMemory.getTitle();
+        this.description = anotherMemory.getDescription();
+        this.categoryId = anotherMemory.getCategoryId();
     }
 
     public Memory(int id, String title, String description) {

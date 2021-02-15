@@ -272,6 +272,7 @@ public class CategoriesFragment extends Fragment {
                                         @Override
                                         public void onClick(View v) {
                                             category.setName(categoryNameET.getText().toString());
+
                                             Call<Category> updateCall = categoryService.updateCategory(category.getId(), category.getName());
                                             updateCall.enqueue(new Callback<Category>() {
                                                 @Override

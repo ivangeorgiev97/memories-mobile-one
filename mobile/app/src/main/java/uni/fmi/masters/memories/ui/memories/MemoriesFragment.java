@@ -322,7 +322,6 @@ public class MemoriesFragment extends Fragment {
                                     });
 
                                     duplicateB.setOnClickListener(new View.OnClickListener() {
-                                        // TODO - Fix this logic
                                         @Override
                                         public void onClick(View v) {
                                             memory.setTitle(memoryTitleET.getText().toString());
@@ -342,34 +341,33 @@ public class MemoriesFragment extends Fragment {
                                                                     memories.set(position, memory);
                                                                     memoriesAdapter.notifyDataSetChanged();
 
-                                                                    oldMemory.setId(dbHelper.getLastMemoryId() + 1);
+                                                                    Call<Memory> addNewCall = memoryService.addMemoryWithoutId(oldMemory.getTitle(), oldMemory.getDescription(), oldMemory.getCategoryId());
+                                                                    addNewCall.enqueue(new Callback<Memory>() {
+                                                                        @Override
+                                                                        public void onResponse(Call<Memory> call, Response<Memory> response) {
+                                                                            if (response.isSuccessful()) {
+                                                                                oldMemory.setId(response.body().getId());
 
-                                                                    if (dbHelper.addMemory(oldMemory)) {
-                                                                        Call<Memory> addCall = memoryService.addMemory(oldMemory.getId(), oldMemory.getTitle(), oldMemory.getDescription(), oldMemory.getCategoryId());
-                                                                        addCall.enqueue(new Callback<Memory>() {
-                                                                            @Override
-                                                                            public void onResponse(Call<Memory> call, Response<Memory> response) {
-                                                                                if (response.isSuccessful()) {
+                                                                                if (dbHelper.addMemory(oldMemory)) {
                                                                                     memories.add(oldMemory);
                                                                                     memoriesAdapter.notifyDataSetChanged();
                                                                                 }
-
-                                                                                doNotDoNothingB.setVisibility(View.GONE);
-                                                                                updateB.setVisibility(View.GONE);
-                                                                                duplicateB.setVisibility(View.GONE);
-                                                                                deleteB.setVisibility(View.GONE);
-                                                                                checkForChangesB.setVisibility(View.GONE);
-
-                                                                                customDialog.hide();
                                                                             }
+                                                                        }
 
-                                                                            @Override
-                                                                            public void onFailure(Call<Memory> call, Throwable t) {
-                                                                                Log.e("ERROR: ", t.getMessage());
-                                                                            }
-                                                                        });
+                                                                        @Override
+                                                                        public void onFailure(Call<Memory> call, Throwable t) {
+                                                                            Log.e("ERROR: ", t.getMessage());
+                                                                        }
+                                                                    });
 
-                                                                    }
+                                                                    doNotDoNothingB.setVisibility(View.GONE);
+                                                                    updateB.setVisibility(View.GONE);
+                                                                    duplicateB.setVisibility(View.GONE);
+                                                                    deleteB.setVisibility(View.GONE);
+                                                                    checkForChangesB.setVisibility(View.GONE);
+
+                                                                    customDialog.hide();
                                                                 }
                                                             });
                                                         }
